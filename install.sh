@@ -52,6 +52,7 @@ pct restore "${VMID}" "${TEMPLATE_FILE}" \
 msg_ok "Container created"
 
 msg_info "Starting container…"
+pct set "${VMID}" --template 0
 pct start "${VMID}"
 sleep 6
 msg_ok "Container started"

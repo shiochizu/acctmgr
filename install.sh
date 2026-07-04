@@ -51,8 +51,23 @@ pct restore "${VMID}" "${TEMPLATE_FILE}" \
   2>&1 | grep -v "^WARNING" || true
 msg_ok "Container created"
 
+msg_info "Removing template flag…"
+# pct restore from a template backup marks the new CT as a template, renames the disk
+# to base-VMID-disk-0 (read-only), and sets template:1 in the config.
+# We undo this at the LVM level before starting.
+CONF="/etc/pve/lxc/${VMID}.conf"
+BASE_DISK="base-${VMID}-disk-0"
+VM_DISK="vm-${VMID}-disk-0"
+VG=$(vgs --noheadings -o vg_name 2>/dev/null | awk '{print $1}' | head -1)
+VG="${VG:-pve}"
+if lvs "${VG}/${BASE_DISK}" &>/dev/null; then
+  lvchange --permission rw "${VG}/${BASE_DISK}" 2>/dev/null || true
+  lvrename "${VG}/${BASE_DISK}" "${VG}/${VM_DISK}"
+  sed -i "s/${BASE_DISK}/${VM_DISK}/g; /^template:/d" "${CONF}"
+fi
+msg_ok "Template flag removed"
+
 msg_info "Starting container…"
-pct set "${VMID}" --template 0
 pct start "${VMID}"
 sleep 6
 msg_ok "Container started"

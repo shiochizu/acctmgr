@@ -25,14 +25,14 @@ echo -e "${DIM}  Press Enter to accept defaults${CL}\n"
 read -rp "  Container ID    [${NEXTID}]:   " VMID;    VMID=${VMID:-$NEXTID}
 read -rp "  Hostname        [dashboard]: " HN;        HN=${HN:-dashboard}
 read -rp "  Storage         [local-lvm]: " STORAGE;   STORAGE=${STORAGE:-local-lvm}
-read -rp "  RAM MB          [512]:       " RAM;        RAM=${RAM:-512}
+read -rp "  RAM MB          [2048]:      " RAM;        RAM=${RAM:-2048}
 read -rp "  Bridge          [vmbr0]:     " BRIDGE;     BRIDGE=${BRIDGE:-vmbr0}
 echo ""
 
 if [[ -f "$TEMPLATE_FILE" ]]; then
   msg_ok "Template already cached"
 else
-  msg_info "Downloading template (≈1.4 GB)…"
+  msg_info "Downloading template (≈1.1 GB)…"
   curl -fL --progress-bar -o "$TEMPLATE_FILE" "$TEMPLATE_URL"
   msg_ok "Template downloaded"
 fi
